@@ -57,7 +57,7 @@ def get_any_category_of_blogs_available_by_id(category_id: int):
     return schemas.CATEGORY[category_id]
 
 
-@router.post("/blog", response_model=schemas.Blog, description="TRYING TO CREATE? TAKE YOUR TIME BUT DON'T WASTE TIME - ONE KEY TO SUCCESS")
+@router.post("/blog", description="TRYING TO CREATE? TAKE YOUR TIME BUT DON'T WASTE TIME - ONE KEY TO SUCCESS")
 async def create_blog(name: str = Form(...), body: str = Form(...), owner_id: int = Form(...), file: UploadFile = File(...), db: Session = Depends(getdb), current_user=Depends(oauth2.get_current_user)):
 
     content = await file.read()
@@ -66,14 +66,14 @@ async def create_blog(name: str = Form(...), body: str = Form(...), owner_id: in
     with open(filename, "wb") as f:
         f.write(content)
     date_published = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    new_blog = models.Blog(name=name, body=body, owner_id=owner_id, date_published=date_published,
+    new_blog = models.Blog(name=name, body=body, owner_id=owner_id,
                            url=f"https://blog-1-k4272118.deta.app/{filename}")
 
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)
 
-    return new_blog
+    return new_blog, datetime.now()
 
 
 @router.put("/blog/{username}{id}", response_model=schemas.ShowBlog, description="HMM, UNSATISFIED WITH YOUR WORK? NO WAHALAS. GO AHEAD, DO AT WILL")
