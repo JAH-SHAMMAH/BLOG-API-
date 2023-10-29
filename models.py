@@ -22,6 +22,7 @@ class User(Base):
     username = Column(String)
     password = Column(String)
     email = Column(String)
+    # date_published = Column(DateTime, default=datetime.now())
 
     blogs = relationship("Blog", back_populates="owner")
 

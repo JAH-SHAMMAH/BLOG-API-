@@ -38,6 +38,7 @@ class Blog(BaseModel):
     name: str
     body: str
     url: str
+    date_published: datetime
 
 
 class BlogRequest(BaseModel):

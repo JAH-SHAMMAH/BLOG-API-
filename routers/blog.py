@@ -73,7 +73,7 @@ async def create_blog(name: str = Form(...), body: str = Form(...), owner_id: in
     db.commit()
     db.refresh(new_blog)
 
-    return new_blog, datetime.now()
+    return {new_blog, date_published}
 
 
 @router.put("/blog/{username}{id}", response_model=schemas.ShowBlog, description="HMM, UNSATISFIED WITH YOUR WORK? NO WAHALAS. GO AHEAD, DO AT WILL")
