@@ -57,8 +57,8 @@ def get_any_category_of_blogs_available_by_id(category_id: int):
     return schemas.CATEGORY[category_id]
 
 
-@router.post("/blog", description="TRYING TO CREATE? TAKE YOUR TIME BUT DON'T WASTE TIME - ONE KEY TO SUCCESS")
-async def create_blog(name: str = Form(...), body: str = Form(...), owner_id: int = Form(...), file: UploadFile = File(...), db: Session = Depends(getdb), current_user=Depends(oauth2.get_current_user)):
+@router.post("/create-blog", description="TRYING TO CREATE? TAKE YOUR TIME BUT DON'T WASTE TIME - ONE KEY TO SUCCESS")
+async def create_a_blog(name: str = Form(...), body: str = Form(...), owner_id: int = Form(...), file: UploadFile = File(...), db: Session = Depends(getdb), current_user=Depends(oauth2.get_current_user)):
 
     content = await file.read()
     filename = f"images/{uuid.uuid4()}.jpg"
@@ -74,6 +74,55 @@ async def create_blog(name: str = Form(...), body: str = Form(...), owner_id: in
     db.refresh(new_blog)
 
     return {new_blog, date_published}
+
+
+# @router.post("/create-blog-in-category", response_model=schemas.BlogCategory, description="NEW POST? YOU GOT THIS!")
+# async def create_a_post_in_a_category(id: int, name: str = Form(...), body: str = Form(...), owner: int = Form(...), file: UploadFile = File(...), db: Session = Depends(getdb), current_user=Depends(oauth2.get_current_user)):
+
+#     content = await file.read()
+#     filename = f"images/{uuid.uuid4()}.jpg"
+
+#     with open(filename, "wb") as f:
+#         f.write(content)
+#     date_published = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+#     new_blog = schemas.CATEGORY
+#     if id not in schemas.CATEGORY:
+#         return "category not found"
+#     schemas.CATEGORY[new_blog]
+
+#     db.add(new_blog)
+#     db.commit()
+#     db.refresh(new_blog)
+
+#     return {new_blog, date_published}
+
+@router.post("/create-blog-in-category", description="NEW POST? YOU GOT THIS!")
+async def create_a_post_in_a_category(id: int, name: str, body: str, db: Session = Depends(getdb), current_user=Depends(oauth2.get_current_user)):
+
+    # content = await file.read()
+    # filename = f"images/{uuid.uuid4()}.jpg"
+
+    # with open(filename, "wb") as f:
+    #     f.write(content)
+
+    date_published = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    new_blog = schemas.BlogCategory(
+        name=name, body=body, date_published=date_published)
+
+    category = db.query(models.Category).filter(
+        models.Category.id == id).first()
+    if not category:
+        return "Category not found"
+
+    new_blog.category = category
+
+    db.add(new_blog)
+    db.commit()
+    db.refresh(new_blog)
+
+    return new_blog
 
 
 @router.put("/blog/{username}{id}", response_model=schemas.ShowBlog, description="HMM, UNSATISFIED WITH YOUR WORK? NO WAHALAS. GO AHEAD, DO AT WILL")

@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
-
-BLOG_CATEGORY = {
+from typing import Optional
+CATEGORY = {
     1: {"category": "Christ",
         "blogs": []
         },
@@ -26,6 +26,14 @@ class User(BaseModel):
     id: int
     username: str
     email: str
+
+
+class BlogCategory(BaseModel):
+    name: str
+    body: str
+    date_published: datetime
+    # owner: User
+    # category: str
 
 
 class RegisterUser(BaseUser):
